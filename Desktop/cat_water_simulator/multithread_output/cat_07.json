@@ -1,0 +1,33 @@
+{
+  "cat_id": 7,
+  "breed": "其他",
+  "age_years": 3,
+  "recommended_daily_ml": {
+    "min": 400.0,
+    "max": 600.0
+  },
+  "actual_total_ml": 450.7,
+  "status": "达标",
+  "drinking_events": [
+    {
+      "time": "00:10",
+      "amount_ml": 111.9
+    },
+    {
+      "time": "00:48",
+      "amount_ml": 99.8
+    },
+    {
+      "time": "02:59",
+      "amount_ml": 66.8
+    },
+    {
+      "time": "07:19",
+      "amount_ml": 150.9
+    },
+    {
+      "time": "09:21",
+      "amount_ml": 21.3
+    }
+  ]
+}

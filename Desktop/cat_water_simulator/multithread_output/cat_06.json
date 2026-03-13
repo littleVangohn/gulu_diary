@@ -1,0 +1,29 @@
+{
+  "cat_id": 6,
+  "breed": "布偶猫",
+  "age_years": 5,
+  "recommended_daily_ml": {
+    "min": 160.0,
+    "max": 240.0
+  },
+  "actual_total_ml": 213.1,
+  "status": "达标",
+  "drinking_events": [
+    {
+      "time": "00:16",
+      "amount_ml": 185.3
+    },
+    {
+      "time": "01:14",
+      "amount_ml": 17.8
+    },
+    {
+      "time": "01:54",
+      "amount_ml": 5.0
+    },
+    {
+      "time": "06:42",
+      "amount_ml": 5.0
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "cat_id": "local_test_01",
+  "timestamp": "2026-02-15T14:04:40.845699",
+  "cat_info": {
+    "breed": "布偶猫",
+    "age": 5
+  },
+  "recommended_range": {
+    "min_ml": 160.0,
+    "max_ml": 240.0
+  },
+  "actual_ml": 221.5,
+  "status": "达标",
+  "metadata": {
+    "version": "2.0",
+    "source": "scientific_simulator"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "cat_id": 2,
+  "breed": "土耳其梵猫",
+  "age_years": 7,
+  "recommended_daily_ml": {
+    "min": 160.0,
+    "max": 240.0
+  },
+  "actual_total_ml": 130.4,
+  "status": "未达标",
+  "drinking_events": [
+    {
+      "time": "00:09",
+      "amount_ml": 54.0
+    },
+    {
+      "time": "01:08",
+      "amount_ml": 22.8
+    },
+    {
+      "time": "01:47",
+      "amount_ml": 26.5
+    },
+    {
+      "time": "05:04",
+      "amount_ml": 5.4
+    },
+    {
+      "time": "08:20",
+      "amount_ml": 5.5
+    },
+    {
+      "time": "11:23",
+      "amount_ml": 5.2
+    },
+    {
+      "time": "14:15",
+      "amount_ml": 5.8
+    },
+    {
+      "time": "18:01",
+      "amount_ml": 5.2
+    }
+  ]
+}

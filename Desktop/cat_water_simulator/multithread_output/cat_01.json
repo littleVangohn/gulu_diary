@@ -1,0 +1,37 @@
+{
+  "cat_id": 1,
+  "breed": "异国短毛猫",
+  "age_years": 4,
+  "recommended_daily_ml": {
+    "min": 120.0,
+    "max": 180.0
+  },
+  "actual_total_ml": 127.5,
+  "status": "达标",
+  "drinking_events": [
+    {
+      "time": "01:58",
+      "amount_ml": 30.8
+    },
+    {
+      "time": "03:42",
+      "amount_ml": 52.6
+    },
+    {
+      "time": "04:47",
+      "amount_ml": 13.2
+    },
+    {
+      "time": "06:55",
+      "amount_ml": 6.9
+    },
+    {
+      "time": "10:57",
+      "amount_ml": 5.8
+    },
+    {
+      "time": "15:15",
+      "amount_ml": 18.2
+    }
+  ]
+}

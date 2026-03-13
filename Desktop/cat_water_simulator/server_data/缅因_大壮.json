@@ -1,0 +1,5 @@
+{"time_str": "17:41:36", "actual_ml": 263.3, "min_ml": 200.0, "max_ml": 300.0, "status": "达标"}
+{"time_str": "17:41:38", "actual_ml": 416.4, "min_ml": 200.0, "max_ml": 300.0, "status": "超标"}
+{"time_str": "17:41:39", "actual_ml": 429.5, "min_ml": 200.0, "max_ml": 300.0, "status": "超标"}
+{"time_str": "17:41:41", "actual_ml": 62.0, "min_ml": 200.0, "max_ml": 300.0, "status": "未达标"}
+{"time_str": "17:41:42", "actual_ml": 240.0, "min_ml": 200.0, "max_ml": 300.0, "status": "达标"}

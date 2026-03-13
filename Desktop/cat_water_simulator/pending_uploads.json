@@ -1,0 +1,47 @@
+[
+  {
+    "cat_id": "布偶_小白",
+    "cat_info": {
+      "breed": "布偶猫",
+      "age": 3
+    },
+    "actual_ml": 54.2,
+    "timestamp": "2026-02-18T15:26:59.968735"
+  },
+  {
+    "cat_id": "布偶_小白",
+    "cat_info": {
+      "breed": "布偶猫",
+      "age": 3
+    },
+    "actual_ml": 183.7,
+    "timestamp": "2026-02-18T15:27:16.337812"
+  },
+  {
+    "cat_id": "布偶_小白",
+    "cat_info": {
+      "breed": "布偶猫",
+      "age": 3
+    },
+    "actual_ml": 211.1,
+    "timestamp": "2026-02-18T15:27:31.925701"
+  },
+  {
+    "cat_id": "布偶_小白",
+    "cat_info": {
+      "breed": "布偶猫",
+      "age": 3
+    },
+    "actual_ml": 124.6,
+    "timestamp": "2026-02-18T15:27:47.632529"
+  },
+  {
+    "cat_id": "布偶_小白",
+    "cat_info": {
+      "breed": "布偶猫",
+      "age": 3
+    },
+    "actual_ml": 223.5,
+    "timestamp": "2026-02-18T15:28:03.373000"
+  }
+]

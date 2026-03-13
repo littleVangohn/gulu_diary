@@ -1,0 +1,29 @@
+{
+  "cat_id": 9,
+  "breed": "英国短毛猫",
+  "age_years": 16,
+  "recommended_daily_ml": {
+    "min": 240.0,
+    "max": 360.0
+  },
+  "actual_total_ml": 258.4,
+  "status": "达标",
+  "drinking_events": [
+    {
+      "time": "03:45",
+      "amount_ml": 241.8
+    },
+    {
+      "time": "05:40",
+      "amount_ml": 5.5
+    },
+    {
+      "time": "06:30",
+      "amount_ml": 5.1
+    },
+    {
+      "time": "10:28",
+      "amount_ml": 6.0
+    }
+  ]
+}

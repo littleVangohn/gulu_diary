@@ -1,0 +1,41 @@
+{
+  "cat_id": 8,
+  "breed": "俄罗斯蓝猫",
+  "age_years": 17,
+  "recommended_daily_ml": {
+    "min": 120.0,
+    "max": 180.0
+  },
+  "actual_total_ml": 174.6,
+  "status": "达标",
+  "drinking_events": [
+    {
+      "time": "05:52",
+      "amount_ml": 123.2
+    },
+    {
+      "time": "07:58",
+      "amount_ml": 13.9
+    },
+    {
+      "time": "09:09",
+      "amount_ml": 7.7
+    },
+    {
+      "time": "11:48",
+      "amount_ml": 9.1
+    },
+    {
+      "time": "15:18",
+      "amount_ml": 7.4
+    },
+    {
+      "time": "17:53",
+      "amount_ml": 8.1
+    },
+    {
+      "time": "21:58",
+      "amount_ml": 5.2
+    }
+  ]
+}
