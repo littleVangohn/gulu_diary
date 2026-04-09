@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  worker:
+    build: .
+    environment:
+      - REDIS_HOST=redis
+    volumes:
+      # 将容器内的输出目录映射到宿主机，和你的 sh 脚本效果一样
+      - ./docker_output:/app/docker_output
+    depends_on:
+      - redis
+    deploy:
+      replicas: 1 # 启动 5 个并发 Worker
