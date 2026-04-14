@@ -4,39 +4,90 @@ import time
 import random
 import numpy as np
 import pika  
-from datetime import datetime
-from core.water_recommender import get_recommended_range
+from datetime import datetime, timedelta
 
+# 🌟 引入核心算法（来自阶段一优化）
+from core.water_recommender import get_recommended_water
 # 🌟 引入密码本
 from cipher_utils import encrypt_data
 
 # === 核心配置区 ===
-RABBITMQ_HOST = "121.43.99.176"  
+RABBITMQ_HOST = "47.97.245.213"  
 RABBITMQ_USER = "admin"          
 RABBITMQ_PASS = "cat_mq_2026"    
 MQ_QUEUE_NAME = "cat_water_queue" 
 CACHE_FILE = "mq_pending_uploads.json" 
 
+# === 丰满后的猫咪名录 (匹配科学计算的数据维度) ===
 CAT_MODELS = [
-    {"id": "a布偶_小白", "breed": "布偶猫", "age": 3},
-    {"id": "b暹罗_小黑", "breed": "暹罗猫", "age": 2},
-    {"id": "c缅因_大壮", "breed": "缅因猫", "age": 5},
-    {"id": "d美短_斑点", "breed": "美国短毛猫", "age": 4}
+    {"id": "a布偶_小白", "breed": "布偶猫", "age": 3, "weight": 5.0, "diet": "纯干粮", "social": "强势"},
+    {"id": "b暹罗_小黑", "breed": "暹罗猫", "age": 2, "weight": 4.0, "diet": "纯湿粮", "social": "正常"},
+    {"id": "c缅因_大壮", "breed": "缅因猫", "age": 5, "weight": 7.5, "diet": "纯干粮", "social": "强势"},
+    {"id": "d美短_斑点", "breed": "美国短毛猫", "age": 4, "weight": 4.5, "diet": "混合喂养", "social": "弱势"}
 ]
 
-def get_single_reading(cat_dict):
-    min_ml, max_ml = get_recommended_range(cat_dict["breed"], cat_dict["age"])
-    mu = (min_ml + max_ml) / 2
-    sigma = (max_ml - min_ml) / 6
-    actual = np.random.normal(mu, sigma)
-    if random.random() < 0.1:
-        actual = actual * random.choice([0.5, 1.5])
-    return {
-        "cat_id": cat_dict["id"],
-        "cat_info": {"breed": cat_dict["breed"], "age": cat_dict["age"]},
-        "actual_ml": round(max(0, actual), 1),
-        "timestamp": datetime.now().isoformat()
-    }
+# ==========================================
+# 行为事件分配器 (Behavioral Engine)
+# ==========================================
+
+def get_random_time(base_date: datetime, hour_start: int, hour_end: int) -> datetime:
+    """在指定的小时范围内生成一个随机时间戳"""
+    minute = random.randint(0, 59)
+    second = random.randint(0, 59)
+    return base_date.replace(hour=hour_start, minute=minute, second=second)
+
+def split_water_volume(total_volume: float, num_splits: int) -> list:
+    """将指定水量随机切分成 N 份，利用随机权重分配保证总和一致"""
+    if num_splits <= 0: return []
+    weights = [random.uniform(0.5, 1.5) for _ in range(num_splits)]
+    total_weight = sum(weights)
+    return [round(total_volume * (w / total_weight), 1) for w in weights]
+
+def generate_daily_schedule(cat: dict) -> list:
+    """生成猫咪一整天的饮水时间表（基于晨昏双峰与活水机特征）"""
+    base_target = get_recommended_water(cat['breed'], cat['age'], cat['weight'], cat['diet'])
+    daily_target = base_target * random.uniform(0.85, 1.15)
+    
+    total_freq = random.randint(5, 10)
+    if cat.get('social') == "弱势":
+        total_freq = max(3, total_freq - 2)
+        
+    distribution = [
+        {"name": "清晨", "hours": (5, 7),  "vol_ratio": 0.30, "freq": max(1, int(total_freq * 0.3))},
+        {"name": "傍晚", "hours": (17, 20), "vol_ratio": 0.40, "freq": max(1, int(total_freq * 0.4))},
+        {"name": "夜间", "hours": (0, 2),   "vol_ratio": 0.20, "freq": max(1, int(total_freq * 0.2))},
+        {"name": "白天", "hours": (9, 16),  "vol_ratio": 0.10, "freq": max(1, int(total_freq * 0.1))}
+    ]
+    
+    today = datetime.now()
+    schedule = []
+    
+    for period in distribution:
+        period_volume = daily_target * period["vol_ratio"]
+        volumes = split_water_volume(period_volume, period["freq"])
+        
+        for vol in volumes:
+            if vol > 25.0:
+                t1 = get_random_time(today, period["hours"][0], period["hours"][1])
+                t2 = t1 + timedelta(minutes=random.randint(2, 5))
+                schedule.append((t1, round(vol/2, 1), "补偿性牛饮"))
+                schedule.append((t2, round(vol/2, 1), "补偿性牛饮"))
+            else:
+                t = get_random_time(today, period["hours"][0], period["hours"][1])
+                schedule.append((t, vol, "正常饮水"))
+
+    play_freq = random.randint(2, 4)
+    for _ in range(play_freq):
+        t = get_random_time(today, 10, 16)
+        play_vol = round(random.uniform(0.5, 1.8), 1)
+        schedule.append((t, play_vol, "活水机玩水/无效交互"))
+
+    schedule.sort(key=lambda x: x[0])
+    return schedule
+
+# ==========================================
+# 消息队列通信层 (MQ Layer)
+# ==========================================
 
 def send_to_mq(data):
     try:
@@ -48,14 +99,13 @@ def send_to_mq(data):
         channel = connection.channel()
         channel.queue_declare(queue=MQ_QUEUE_NAME, durable=True)
 
-        # 🌟 核心修改点：将 JSON 转成字符串，并进行 AES 加密
         json_str = json.dumps(data, ensure_ascii=False)
         encrypted_body = encrypt_data(json_str)
         
         channel.basic_publish(
             exchange='',
             routing_key=MQ_QUEUE_NAME,
-            body=encrypted_body,  # 发送的不再是明文，而是加密后的乱码
+            body=encrypted_body,
             properties=pika.BasicProperties(delivery_mode=2) 
         )
         connection.close()
@@ -67,13 +117,11 @@ def upload_logic(data):
     for i in range(3):
         success, info = send_to_mq(data)
         if success:
-            print(f"✅ [{data['cat_id']}] {data['actual_ml']}ml -> MQ 状态: {info}")
-            return True
+            return True, info
         wait = (2 ** i) + random.random()
-        print(f"❌ 连接 MQ 失败 ({info})，{wait:.1f}s 后重试...")
         time.sleep(wait)
     save_to_cache(data)
-    return False
+    return False, "投递失败已缓存"
 
 def save_to_cache(data):
     cache = []
@@ -98,17 +146,47 @@ def process_offline_data():
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(still_failed, f, ensure_ascii=False, indent=2)
 
-# === 主程序 ===
+# ==========================================
+# 主程序：时间轴回放模拟
+# ==========================================
 if __name__ == "__main__":
-    print("=== 🚀 智能猫咪模拟器 (极限狂暴火力测试) ===")
+    print("=== 🚀 智能猫咪模拟器 (MQ加密版 + 阶段二仿生时间轴) ===")
     process_offline_data()
-    target_cat = random.choice(CAT_MODELS)
-    print(f"\n🐾 设备已绑定猫咪: {target_cat['id']}")
     
-    # 🌟 修改点：一次性连发 100 条，并且去掉 time.sleep！
-    for i in range(1, 101):
-        # 提示：为了不让终端刷屏太快，我们就不打印进度了
-        current_data = get_single_reading(target_cat)
-        upload_logic(current_data)
+    target_cat = random.choice(CAT_MODELS)
+    print(f"\n🐾 设备已绑定猫咪: {target_cat['id']} ({target_cat['breed']}, {target_cat['weight']}kg, {target_cat['diet']})")
+    
+    print("⏳ 正在生成今日仿生行为时间轴...")
+    daily_schedule = generate_daily_schedule(target_cat)
+    total_sim_water = sum([event[1] for event in daily_schedule])
+    print(f"✅ 时间轴生成完毕! 预计今日饮水 {len(daily_schedule)} 次，共计 {total_sim_water:.1f} ml\n")
+    print("-" * 60)
+    
+    # 🌟 替换掉之前的 100 次狂暴循环，按时间轴顺序模拟发送
+    for index, (timestamp, amount, event_type) in enumerate(daily_schedule, 1):
+        iso_time = timestamp.isoformat()
+        time_str = timestamp.strftime('%H:%M:%S')
         
-    print(f"=== 100 条狂暴火力发送完毕 ===")
+        payload = {
+            "cat_id": target_cat["id"],
+            "cat_info": {"breed": target_cat["breed"], "age": target_cat["age"]},
+            "actual_ml": amount,
+            "timestamp": iso_time
+        }
+        
+        # 控制台 UI 输出格式化
+        print(f"[{time_str}] 💧 {event_type:<10} | {amount:>4.1f} ml ", end="", flush=True)
+        
+        success, server_msg = upload_logic(payload)
+        
+        if success:
+            print(f"-> 📡 MQ 状态: {server_msg}")
+        else:
+            print("-> ❌ 连接 MQ 失败，已转入本地缓存")
+            
+        # 每次发送间隔 0.5 秒，模拟一天的时光飞逝
+        if index < len(daily_schedule):
+            time.sleep(0.5) 
+            
+    print("-" * 60)
+    print(f"🎉 模拟结束！【{target_cat['id']}】的完整一日加密特征数据已全部推送到 RabbitMQ。")
